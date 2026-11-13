@@ -1,8 +1,7 @@
 name: Build APK
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - '.github/workflows/build-apk.yml'
       - 'app/**'
@@ -19,9 +18,8 @@ jobs:
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-      - name: Apply UI, storage and WebView fixes
+      - uses: actions/checkout@v4
+      - name: Apply source fixes
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -32,260 +30,109 @@ jobs:
               if new in text:
                   return
               if old not in text:
-                  raise SystemExit(f'Expected source text was not found in {path}')
+                  raise SystemExit(f'Expected text not found in {path}: {old[:80]!r}')
               path.write_text(text.replace(old, new, 1), encoding='utf-8')
 
-          type_file = Path('app/src/main/java/com/example/ui/theme/Type.kt')
-          type_file.write_text('''package com.example.ui.theme
+          root = Path('app/src/main/java/com/example')
+          type_file = root / 'ui/theme/Type.kt'
+          text = type_file.read_text(encoding='utf-8')
+          text = re.sub(r'val RobotoFontFamily = FontFamily\([\s\S]*?\n\)\n', 'val DesktopUiFontFamily = FontFamily.SansSerif\n', text, count=1)
+          text = text.replace('RobotoFontFamily', 'DesktopUiFontFamily')
+          for name, size, line in [('headlineMedium', 22, 28), ('titleLarge', 18, 24), ('titleMedium', 16, 21), ('titleSmall', 14, 19), ('bodyLarge', 16, 22), ('bodyMedium', 14, 20), ('bodySmall', 12, 16), ('labelLarge', 14, 18), ('labelMedium', 12, 16), ('labelSmall', 11, 14)]:
+              pattern = rf'({name} = TextStyle\()(.*?)(\n    \),)'
+              match = re.search(pattern, text, re.S)
+              if not match:
+                  raise SystemExit(f'Missing typography style: {name}')
+              body = re.sub(r'fontSize = [0-9.]+\.sp', f'fontSize = {size}.sp', match.group(2), count=1)
+              body = re.sub(r'lineHeight = [0-9.]+\.sp', f'lineHeight = {line}.sp', body, count=1)
+              text = text[:match.start()] + match.group(1) + body + match.group(3) + text[match.end():]
+          type_file.write_text(text, encoding='utf-8')
 
-          import androidx.compose.material3.Typography
-          import androidx.compose.ui.text.TextStyle
-          import androidx.compose.ui.text.font.Font
-          import androidx.compose.ui.text.font.FontFamily
-          import androidx.compose.ui.text.font.FontWeight
-          import androidx.compose.ui.unit.sp
-          import com.example.R
+          replace_once(root / 'ui/components/StartMenuOverlay.kt', 'import androidx.compose.foundation.layout.fillMaxWidth\n', 'import androidx.compose.foundation.layout.fillMaxSize\nimport androidx.compose.foundation.layout.fillMaxWidth\n')
 
-          val DesktopUiFontFamily = FontFamily.SansSerif
+          taskbar = root / 'ui/components/TaskbarBar.kt'
+          text = taskbar.read_text(encoding='utf-8')
+          if 'import androidx.compose.material.icons.outlined.Apps' not in text:
+              text = text.replace('import androidx.compose.material.icons.Icons\n', 'import androidx.compose.material.icons.Icons\nimport androidx.compose.material.icons.outlined.Apps\nimport androidx.compose.material.icons.outlined.Language\n', 1)
+          text = text.replace('@Composable\n@Composable\nprivate fun TaskbarWidgetsOverlayButton', '@Composable\nprivate fun TaskbarWidgetsOverlayButton', 1)
+          text = re.sub(r'(contentDescription = strings\.searchPlaceholder,\s*tint = MaterialTheme\.colorScheme\.onSurfaceVariant,\s*modifier = Modifier\.size\()15(\.dp\))', r'\g<1>16\2', text, count=1)
+          text = re.sub(r'(contentDescription = strings\.taskSwitcherTitle,\s*modifier = Modifier\.size\()21(\.dp\))', r'\g<1>22\2', text, count=1)
+          text = re.sub(r'(bitmap = app\.icon,\s*contentDescription = app\.displayLabel,\s*modifier = Modifier\s*\.size\()24(\.dp\))', r'\g<1>22\2', text, count=1)
+          taskbar.write_text(text, encoding='utf-8')
 
-          val JetBrainsMonoFontFamily = FontFamily(
-              Font(R.font.jetbrains_mono, FontWeight.Normal),
-              Font(R.font.jetbrains_mono, FontWeight.Medium)
-          )
-
-          val WinPadTypography = Typography(
-              headlineMedium = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.SemiBold,
-                  fontSize = 22.sp,
-                  lineHeight = 28.sp
-              ),
-              titleLarge = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.SemiBold,
-                  fontSize = 18.sp,
-                  lineHeight = 24.sp
-              ),
-              titleMedium = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Medium,
-                  fontSize = 16.sp,
-                  lineHeight = 21.sp
-              ),
-              titleSmall = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.SemiBold,
-                  fontSize = 14.sp,
-                  lineHeight = 19.sp
-              ),
-              bodyLarge = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Normal,
-                  fontSize = 16.sp,
-                  lineHeight = 22.sp
-              ),
-              bodyMedium = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Normal,
-                  fontSize = 14.sp,
-                  lineHeight = 20.sp
-              ),
-              bodySmall = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Normal,
-                  fontSize = 12.sp,
-                  lineHeight = 16.sp
-              ),
-              labelLarge = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Medium,
-                  fontSize = 14.sp,
-                  lineHeight = 18.sp
-              ),
-              labelMedium = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Medium,
-                  fontSize = 12.sp,
-                  lineHeight = 16.sp
-              ),
-              labelSmall = TextStyle(
-                  fontFamily = DesktopUiFontFamily,
-                  fontWeight = FontWeight.Normal,
-                  fontSize = 11.sp,
-                  lineHeight = 14.sp
-              )
-          )
-          ''', encoding='utf-8')
-
-          start_menu = Path('app/src/main/java/com/example/ui/components/StartMenuOverlay.kt')
-          replace_once(
-              start_menu,
-              'import androidx.compose.foundation.layout.fillMaxWidth\n',
-              'import androidx.compose.foundation.layout.fillMaxSize\nimport androidx.compose.foundation.layout.fillMaxWidth\n',
-          )
-
-          taskbar = Path('app/src/main/java/com/example/ui/components/TaskbarBar.kt')
-          replace_once(
-              taskbar,
-              'import androidx.compose.material.icons.Icons\n',
-              'import androidx.compose.material.icons.Icons\nimport androidx.compose.material.icons.outlined.Apps\nimport androidx.compose.material.icons.outlined.Language\n',
-          )
-          taskbar_text = taskbar.read_text(encoding='utf-8')
-          taskbar_text = taskbar_text.replace(
-              '@Composable\n@Composable\nprivate fun TaskbarWidgetsOverlayButton',
-              '@Composable\nprivate fun TaskbarWidgetsOverlayButton',
-              1,
-          )
-          taskbar_text = re.sub(
-              r'(contentDescription = strings\.searchPlaceholder,\s*tint = MaterialTheme\.colorScheme\.onSurfaceVariant,\s*modifier = Modifier\.size\()15(\.dp\))',
-              r'\g<1>16\2', taskbar_text, count=1,
-          )
-          taskbar_text = re.sub(
-              r'(contentDescription = strings\.taskSwitcherTitle,\s*modifier = Modifier\.size\()21(\.dp\))',
-              r'\g<1>22\2', taskbar_text, count=1,
-          )
-          taskbar_text = re.sub(
-              r'(bitmap = app\.icon,\s*contentDescription = app\.displayLabel,\s*modifier = Modifier\s*\.size\()24(\.dp\))',
-              r'\g<1>22\2', taskbar_text, count=1,
-          )
-          taskbar.write_text(taskbar_text, encoding='utf-8')
-
-          clock = Path('app/src/main/java/com/example/ui/components/Windows11SystemClock.kt')
+          clock = root / 'ui/components/Windows11SystemClock.kt'
           replace_once(clock, 'fontSize = 10.sp,\n                        lineHeight = 12.sp', 'fontSize = 12.sp,\n                        lineHeight = 14.sp')
           replace_once(clock, 'fontSize = 9.sp,\n                            lineHeight = 11.sp', 'fontSize = 11.sp,\n                            lineHeight = 13.sp')
           replace_once(clock, 'modifier = Modifier.size(15.dp)', 'modifier = Modifier.size(16.dp)')
+          replace_once(root / 'data/SafFileExplorerRepository.kt', 'return DocumentsContract.buildDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)', 'return DocumentsContract.buildTreeDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)')
 
-          repository = Path('app/src/main/java/com/example/data/SafFileExplorerRepository.kt')
-          replace_once(
-              repository,
-              'return DocumentsContract.buildDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)',
-              'return DocumentsContract.buildTreeDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)',
-          )
+          this_pc = root / 'ui/components/ThisPcWindowContent.kt'
+          replace_once(this_pc, 'if (!hasExternalStorageConnected) {', 'if (!hasExternalStorageConnected && filteredItems.isNotEmpty()) {')
+          replace_once(this_pc, 'text = strings.emptyFolderContent,', 'text = if (!hasExternalStorageConnected) {\n                            strings.externalAccessHint\n                        } else {\n                            strings.emptyFolderContent\n                        },')
+          replace_once(this_pc, 'folderPickerLauncher.launch(quickInitialUriProvider("Download"))', 'folderPickerLauncher.launch(quickInitialUriProvider(null))')
+          replace_once(this_pc, 'Icon(Icons.Outlined.Download, contentDescription = null, modifier = Modifier.size(16.dp))', 'Icon(Icons.Outlined.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))')
+          replace_once(this_pc, 'Text(strings.downloadsFolder, style = MaterialTheme.typography.labelMedium)', 'Text(strings.mountFolder, style = MaterialTheme.typography.labelMedium)')
 
-          this_pc = Path('app/src/main/java/com/example/ui/components/ThisPcWindowContent.kt')
-          replace_once(
-              this_pc,
-              'if (!hasExternalStorageConnected) {',
-              'if (!hasExternalStorageConnected && filteredItems.isNotEmpty()) {',
-          )
-          replace_once(
-              this_pc,
-              'text = strings.emptyFolderContent,',
-              'text = if (!hasExternalStorageConnected) {\n                                strings.externalAccessHint\n                            } else {\n                                strings.emptyFolderContent\n                            },',
-          )
-          replace_once(
-              this_pc,
-              '''OutlinedButton(
-                              onClick = { folderPickerLauncher.launch(quickInitialUriProvider("Download")) }
-                          ) {
-                              Icon(Icons.Outlined.Download, contentDescription = null, modifier = Modifier.size(16.dp))
-                              Spacer(modifier = Modifier.width(6.dp))
-                              Text(strings.downloadsFolder, style = MaterialTheme.typography.labelMedium)
-                          }''',
-              '''OutlinedButton(
-                              onClick = { folderPickerLauncher.launch(quickInitialUriProvider(null)) }
-                          ) {
-                              Icon(Icons.Outlined.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
-                              Spacer(modifier = Modifier.width(6.dp))
-                              Text(strings.mountFolder, style = MaterialTheme.typography.labelMedium)
-                          }''',
-          )
-
-          strings = Path('app/src/main/java/com/example/ui/Strings.kt')
+          strings = root / 'ui/Strings.kt'
           replace_once(strings, '    val browserAddressHint: String,\n', '    val browserAddressHint: String,\n    val webViewVersionLabel: String,\n    val webViewProviderUnavailable: String,\n')
           replace_once(strings, 'localStorageLabel = "Yerel Depolama"', 'localStorageLabel = "Windroid Uygulama Alanı"')
           replace_once(strings, 'localStorageLabel = "Local Storage"', 'localStorageLabel = "Windroid App Storage"')
-          replace_once(
-              strings,
-              'externalAccessHint = "Cihaz klasörlerinizi görmek için yukarıdaki Ana Dizinlerden birine (örn. İndirilenler veya Belgeler) dokunup \'Bu klasörü kullan\' izni verin."',
-              'externalAccessHint = "Android dosyalarını görmek için üstteki bir klasörü seçin; sistem ekranında \'Bu klasörü kullan\' ve \'İzin ver\' adımlarını onaylayın."',
-          )
-          replace_once(
-              strings,
-              'externalAccessHint = "Tap any Main Directory above (Downloads, Documents, Pictures...) and allow access to browse your tablet files."',
-              'externalAccessHint = "To see Android files, choose a folder above, then confirm \'Use this folder\' and \'Allow\' in the system picker."',
-          )
-          replace_once(
-              strings,
-              'browserAddressHint = "Web adresi yazın veya Google\'da arayın...",\n',
-              'browserAddressHint = "Web adresi yazın veya Google\'da arayın...",\n        webViewVersionLabel = "WebView",\n        webViewProviderUnavailable = "WebView sağlayıcısı bulunamadı",\n',
-          )
-          replace_once(
-              strings,
-              'browserAddressHint = "Enter web address or search Google...",\n',
-              'browserAddressHint = "Enter web address or search Google...",\n        webViewVersionLabel = "WebView",\n        webViewProviderUnavailable = "WebView provider unavailable",\n',
-          )
+          replace_once(strings, 'externalAccessHint = "Cihaz klasörlerinizi görmek için yukarıdaki Ana Dizinlerden birine (örn. İndirilenler veya Belgeler) dokunup \'Bu klasörü kullan\' izni verin."', 'externalAccessHint = "Android dosyalarını görmek için üstteki bir klasörü seçin; sistem ekranında \'Bu klasörü kullan\' ve \'İzin ver\' adımlarını onaylayın."')
+          replace_once(strings, 'externalAccessHint = "Tap any Main Directory above (Downloads, Documents, Pictures...) and allow access to browse your tablet files."', 'externalAccessHint = "To see Android files, choose a folder above, then confirm \'Use this folder\' and \'Allow\' in the system picker."')
+          replace_once(strings, 'browserAddressHint = "Web adresi yazın veya Google\'da arayın...",\n', 'browserAddressHint = "Web adresi yazın veya Google\'da arayın...",\n        webViewVersionLabel = "WebView",\n        webViewProviderUnavailable = "WebView sağlayıcısı bulunamadı",\n')
+          replace_once(strings, 'browserAddressHint = "Enter web address or search Google...",\n', 'browserAddressHint = "Enter web address or search Google...",\n        webViewVersionLabel = "WebView",\n        webViewProviderUnavailable = "WebView provider unavailable",\n')
 
-          browser = Path('app/src/main/java/com/example/ui/components/BrowserWindowContent.kt')
+          browser = root / 'ui/components/BrowserWindowContent.kt'
           replace_once(browser, 'import android.net.Uri\n', 'import android.net.Uri\nimport android.os.Build\nimport android.provider.Settings\n')
-          replace_once(
-              browser,
-              '    val focusManager = LocalFocusManager.current\n',
-              '    val focusManager = LocalFocusManager.current\n    val webViewProvider = remember {\n        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WebView.getCurrentWebViewPackage() else null\n    }\n',
-          )
-          replace_once(
-              browser,
-              '                    if (shortcutSavedBanner) {',
-              '''                    val providerVersion = webViewProvider?.versionName
-                          ?: webViewProvider?.packageName
-                          ?: strings.webViewProviderUnavailable
-                      Surface(
-                          modifier = Modifier
-                              .clip(RoundedCornerShape(8.dp))
-                              .clickable(enabled = webViewProvider != null) {
-                                  webViewProvider?.let { provider ->
-                                      context.startActivity(
-                                          Intent(
-                                              Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                              Uri.fromParts("package", provider.packageName, null)
-                                          )
-                                      )
-                                  }
-                              }
-                              .testTag("browser_webview_provider"),
-                          color = chrome.windowSurface.copy(alpha = 0.65f),
-                          shape = RoundedCornerShape(8.dp),
-                          border = BorderStroke(0.6.dp, chrome.glassBorder)
-                      ) {
-                          Text(
-                              text = "${strings.webViewVersionLabel}: $providerVersion",
-                              style = MaterialTheme.typography.labelSmall,
-                              color = MaterialTheme.colorScheme.onSurfaceVariant,
-                              maxLines = 1,
-                              modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
-                          )
-                      }
-                      if (shortcutSavedBanner) {''',
-          )
+          replace_once(browser, '    val focusManager = LocalFocusManager.current\n', '    val focusManager = LocalFocusManager.current\n    val webViewProvider = remember {\n        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WebView.getCurrentWebViewPackage() else null\n    }\n')
+          replace_once(browser, '                    if (shortcutSavedBanner) {', '''                    val providerVersion = webViewProvider?.versionName
+                        ?: webViewProvider?.packageName
+                        ?: strings.webViewProviderUnavailable
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(enabled = webViewProvider != null) {
+                                webViewProvider?.let { provider ->
+                                    context.startActivity(
+                                        Intent(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                            Uri.fromParts("package", provider.packageName, null)
+                                        )
+                                    )
+                                }
+                            }
+                            .testTag("browser_webview_provider"),
+                        color = chrome.windowSurface.copy(alpha = 0.65f),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(0.6.dp, chrome.glassBorder)
+                    ) {
+                        Text(
+                            text = "${strings.webViewVersionLabel}: $providerVersion",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
+                        )
+                    }
+                    if (shortcutSavedBanner) {''')
 
           test_file = Path('app/src/test/java/com/example/ExampleRobolectricTest.kt')
           replace_once(test_file, 'import android.content.Context\n', 'import android.content.Context\nimport android.provider.DocumentsContract\n')
           replace_once(test_file, 'import androidx.test.core.app.ApplicationProvider\n', 'import androidx.test.core.app.ApplicationProvider\nimport com.example.data.SafFileExplorerRepository\n')
-          replace_once(
-              test_file,
-              '''  @Test
-              fun `read string from context`() {
-                val context = ApplicationProvider.getApplicationContext<Context>()
-                val appName = context.getString(R.string.app_name)
-                assertEquals("Windroid", appName)
-              }
-          }''',
-              '''  @Test
-              fun `read string from context`() {
-                val context = ApplicationProvider.getApplicationContext<Context>()
-                val appName = context.getString(R.string.app_name)
-                assertEquals("Windroid", appName)
-              }
+          test_text = test_file.read_text(encoding='utf-8')
+          if 'quick storage picker uri is a tree uri for selected folder' not in test_text:
+              test_text = test_text.rstrip()[:-1] + '''
 
-              @Test
-              fun `quick storage picker uri is a tree uri for selected folder`() {
-                val context = ApplicationProvider.getApplicationContext<Context>()
-                val uri = SafFileExplorerRepository(context).quickSafInitialUri("Download")
+            @Test
+            fun `quick storage picker uri is a tree uri for selected folder`() {
+              val context = ApplicationProvider.getApplicationContext<Context>()
+              val uri = SafFileExplorerRepository(context).quickSafInitialUri("Download")
 
-                assertEquals("primary:Download", DocumentsContract.getTreeDocumentId(uri))
-              }
-          }''',
-          )
+              assertEquals("primary:Download", DocumentsContract.getTreeDocumentId(uri))
+            }
+          }
+          '''
+              test_file.write_text(test_text, encoding='utf-8')
           PY
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
@@ -306,10 +153,7 @@ jobs:
       - name: Install Android SDK packages
         run: |
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
-          if [ -z "$SDKMANAGER" ]; then
-            echo 'Android sdkmanager was not found on the runner.' >&2
-            exit 1
-          fi
+          if [ -z "$SDKMANAGER" ]; then echo 'Android sdkmanager was not found.' >&2; exit 1; fi
           echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
           PACKAGES="$("$SDKMANAGER" --list)"
