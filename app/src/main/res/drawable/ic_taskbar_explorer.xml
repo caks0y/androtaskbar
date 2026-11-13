@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Folder Back Tab -->
+    <path
+        android:fillColor="#FFD98E16"
+        android:pathData="M3,5 C3,3.9 3.9,3 5,3 L9.5,3 L11.5,5.2 L19,5.2 C20.1,5.2 21,6.1 21,7.2 L21,9 L3,9 Z" />
+    <!-- Folder Front Body -->
+    <path
+        android:fillColor="#FFF7C443"
+        android:pathData="M2.5,8.2 L21.5,8.2 C22.1,8.2 22.5,8.6 22.5,9.2 L21.8,19.2 C21.7,20.2 20.9,21 19.9,21 L4.1,21 C3.1,21 2.3,20.2 2.2,19.2 L1.5,9.2 C1.5,8.6 1.9,8.2 2.5,8.2 Z" />
+    <!-- Blue Explorer Stand Bar -->
+    <path
+        android:fillColor="#FF0078D4"
+        android:pathData="M7,16.5 L17,16.5 L17,21 L7,21 Z" />
+    <path
+        android:fillColor="#FF60CDFF"
+        android:pathData="M9,14.5 L15,14.5 L15,16.5 L9,16.5 Z" />
+</vector>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Windroid</string>
+    <string name="overlay_notification_channel_name">Always-On-Top Taskbar</string>
+    <string name="overlay_notification_channel_desc">Keeps the floating Windows 11 taskbar active above other apps.</string>
+    <string name="overlay_notification_title">Windroid Taskbar Active</string>
+    <string name="overlay_notification_text">Tap Start or pinned apps anytime to launch in freeform windows.</string>
+    <string name="overlay_action_open_desktop">Open Desktop</string>
+    <string name="overlay_action_stop">Stop Overlay</string>
+    <string name="this_pc_title">This PC</string>
+    <string name="settings_title">Desktop Settings</string>
+    <string name="system_monitor_title">System Info</string>
+    <string name="quick_notes_title">Scratchpad</string>
+    <string name="start_button_desc">Start Menu</string>
+    <string name="search_placeholder">Type here to search apps, settings, or files</string>
+    <string name="cd_app_icon">Application icon</string>
+    <string name="cd_close_window">Close window</string>
+    <string name="cd_minimize_window">Minimize window</string>
+    <string name="cd_maximize_window">Maximize window</string>
+</resources>

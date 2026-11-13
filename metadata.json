@@ -1,0 +1,8 @@
+{
+  "name": "Windroid",
+  "description": "Windows 11-inspired desktop launcher with always-on-top floating taskbar, freeform multi-window launcher, and built-in file explorer for Android and HarmonyOS tablets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
