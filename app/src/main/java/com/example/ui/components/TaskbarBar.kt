@@ -30,6 +30,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.automirrored.outlined.VolumeOff
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.BatteryChargingFull
@@ -585,7 +587,6 @@ private fun TaskbarFlatIconSlot(
     }
 }
 
-@Composable
 @Composable
 private fun TaskbarWidgetsOverlayButton(
     isRunning: Boolean,
