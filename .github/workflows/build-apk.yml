@@ -11,7 +11,7 @@ on:
       - 'gradle.properties'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +21,45 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+      - name: Fix Kotlin compilation errors
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          start_menu = Path('app/src/main/java/com/example/ui/components/StartMenuOverlay.kt')
+          text = start_menu.read_text()
+          if 'import androidx.compose.foundation.layout.fillMaxSize' not in text:
+              text = text.replace(
+                  'import androidx.compose.foundation.layout.fillMaxWidth\n',
+                  'import androidx.compose.foundation.layout.fillMaxSize\nimport androidx.compose.foundation.layout.fillMaxWidth\n',
+                  1,
+              )
+              start_menu.write_text(text)
+
+          taskbar = Path('app/src/main/java/com/example/ui/components/TaskbarBar.kt')
+          text = taskbar.read_text()
+          if 'import androidx.compose.material.icons.outlined.Apps' not in text:
+              text = text.replace(
+                  'import androidx.compose.material.icons.Icons\n',
+                  'import androidx.compose.material.icons.Icons\n'
+                  'import androidx.compose.material.icons.outlined.Apps\n'
+                  'import androidx.compose.material.icons.outlined.Language\n',
+                  1,
+              )
+          text = text.replace(
+              '@Composable\n@Composable\nprivate fun TaskbarWidgetsOverlayButton',
+              '@Composable\nprivate fun TaskbarWidgetsOverlayButton',
+              1,
+          )
+          taskbar.write_text(text)
+          PY
+          if ! git diff --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add app/src/main/java/com/example/ui/components/StartMenuOverlay.kt app/src/main/java/com/example/ui/components/TaskbarBar.kt
+            git commit -m 'Fix Kotlin compilation errors' -m 'Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>'
+            git push
+          fi
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -40,11 +79,10 @@ jobs:
           echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
           PACKAGES="$("$SDKMANAGER" --list)"
-          if printf '%s\n' "$PACKAGES" | grep -Fq 'platforms;android-36.1'; then
-            SDK_PLATFORM='platforms;android-36.1'
-          else
-            SDK_PLATFORM='platforms;android-36'
-          fi
+          case "$PACKAGES" in
+            *'platforms;android-36.1'*) SDK_PLATFORM='platforms;android-36.1' ;;
+            *) SDK_PLATFORM='platforms;android-36' ;;
+          esac
           "$SDKMANAGER" "$SDK_PLATFORM" 'platform-tools' 'build-tools;36.0.0'
       - name: Create temporary debug signing key
         run: |
