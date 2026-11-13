@@ -39,7 +39,7 @@ jobs:
           text = re.sub(r'val RobotoFontFamily = FontFamily\([\s\S]*?\n\)\n', 'val DesktopUiFontFamily = FontFamily.SansSerif\n', text, count=1)
           text = text.replace('RobotoFontFamily', 'DesktopUiFontFamily')
           for name, size, line in [('headlineMedium', 22, 28), ('titleLarge', 18, 24), ('titleMedium', 16, 21), ('titleSmall', 14, 19), ('bodyLarge', 16, 22), ('bodyMedium', 14, 20), ('bodySmall', 12, 16), ('labelLarge', 14, 18), ('labelMedium', 12, 16), ('labelSmall', 11, 14)]:
-              pattern = rf'({name} = TextStyle\()(.*?)(\n    \),)'
+              pattern = rf'({name} = TextStyle\()(.*?)(\n    \),?)'
               match = re.search(pattern, text, re.S)
               if not match:
                   raise SystemExit(f'Missing typography style: {name}')
