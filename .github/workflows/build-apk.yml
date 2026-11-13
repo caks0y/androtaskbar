@@ -15,6 +15,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -27,10 +30,22 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.3.1'
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
       - name: Install Android SDK packages
-        run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          if [ -z "$SDKMANAGER" ]; then
+            echo 'Android sdkmanager was not found on the runner.' >&2
+            exit 1
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          PACKAGES="$("$SDKMANAGER" --list)"
+          if printf '%s\n' "$PACKAGES" | grep -Fq 'platforms;android-36.1'; then
+            SDK_PLATFORM='platforms;android-36.1'
+          else
+            SDK_PLATFORM='platforms;android-36'
+          fi
+          "$SDKMANAGER" "$SDK_PLATFORM" 'platform-tools' 'build-tools;36.0.0'
       - name: Create temporary debug signing key
         run: |
           keytool -genkeypair -v \
