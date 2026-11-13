@@ -407,7 +407,7 @@ fun ThisPcWindowContent(
             }
         }
 
-        if (!hasExternalStorageConnected) {
+        if (!hasExternalStorageConnected && filteredItems.isNotEmpty()) {
             Surface(
                 color = chrome.accent.copy(alpha = 0.10f),
                 shape = RoundedCornerShape(10.dp),
@@ -533,7 +533,11 @@ fun ThisPcWindowContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = strings.emptyFolderContent,
+                            text = if (!hasExternalStorageConnected) {
+                            strings.externalAccessHint
+                        } else {
+                            strings.emptyFolderContent
+                        },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

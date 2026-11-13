@@ -58,7 +58,7 @@ class SafFileExplorerRepository(private val context: Context) {
 
     fun quickSafInitialUri(primarySubfolder: String?): Uri {
         val docId = if (primarySubfolder.isNullOrBlank()) "primary:" else "primary:$primarySubfolder"
-        return DocumentsContract.buildDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)
+        return DocumentsContract.buildTreeDocumentUri(EXTERNAL_STORAGE_AUTHORITY, docId)
     }
 
     fun isLocalRoot(treeUriString: String): Boolean = treeUriString == LOCAL_STORAGE_URI

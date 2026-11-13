@@ -8,12 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.R
 
-val RobotoFontFamily = FontFamily(
-    Font(R.font.roboto, FontWeight.Normal),
-    Font(R.font.roboto, FontWeight.Medium),
-    Font(R.font.roboto, FontWeight.SemiBold),
-    Font(R.font.roboto, FontWeight.Bold)
-)
+val DesktopUiFontFamily = FontFamily.SansSerif
 
 val JetBrainsMonoFontFamily = FontFamily(
     Font(R.font.jetbrains_mono, FontWeight.Normal),
@@ -22,63 +17,63 @@ val JetBrainsMonoFontFamily = FontFamily(
 
 val WinPadTypography = Typography(
     headlineMedium = TextStyle(
-        fontFamily = RobotoFontFamily,
+        fontFamily = DesktopUiFontFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
-        lineHeight = 23.sp
+        fontSize = 22.sp,
+        lineHeight = 28.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = RobotoFontFamily,
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+        lineHeight = 24.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 21.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = DesktopUiFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = 19.sp
     ),
-    titleMedium = TextStyle(
-        fontFamily = RobotoFontFamily,
+    bodyLarge = TextStyle(
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 22.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = DesktopUiFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 18.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = DesktopUiFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp
     ),
-    titleSmall = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 10.5.sp,
-        lineHeight = 14.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 10.5.sp,
-        lineHeight = 14.5.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 10.sp,
-        lineHeight = 14.sp
-    ),
-    bodySmall = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 9.sp,
-        lineHeight = 12.sp
-    ),
-    labelLarge = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 10.sp,
-        lineHeight = 13.5.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = RobotoFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 9.5.sp,
-        lineHeight = 13.sp
-    ),
     labelSmall = TextStyle(
-        fontFamily = RobotoFontFamily,
+        fontFamily = DesktopUiFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 9.sp,
-        lineHeight = 12.sp
+        fontSize = 11.sp,
+        lineHeight = 14.sp
     )
 )

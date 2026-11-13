@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -91,6 +93,9 @@ fun BrowserWindowContent(
     val chrome = LocalWinPadChrome.current
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val webViewProvider = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WebView.getCurrentWebViewPackage() else null
+    }
 
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     var addressInput by remember { mutableStateOf(initialUrl) }
@@ -303,7 +308,36 @@ fun BrowserWindowContent(
                             )
                         }
                     }
-                    if (shortcutSavedBanner) {
+                    val providerVersion = webViewProvider?.versionName
+              ?: webViewProvider?.packageName
+              ?: strings.webViewProviderUnavailable
+          Surface(
+              modifier = Modifier
+                  .clip(RoundedCornerShape(8.dp))
+                  .clickable(enabled = webViewProvider != null) {
+                      webViewProvider?.let { provider ->
+                          context.startActivity(
+                              Intent(
+                                  Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                  Uri.fromParts("package", provider.packageName, null)
+                              )
+                          )
+                      }
+                  }
+                  .testTag("browser_webview_provider"),
+              color = chrome.windowSurface.copy(alpha = 0.65f),
+              shape = RoundedCornerShape(8.dp),
+              border = BorderStroke(0.6.dp, chrome.glassBorder)
+          ) {
+              Text(
+                  text = "${strings.webViewVersionLabel}: $providerVersion",
+                  style = MaterialTheme.typography.labelSmall,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  maxLines = 1,
+                  modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
+              )
+          }
+          if (shortcutSavedBanner) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
                             shape = RoundedCornerShape(8.dp),

@@ -256,7 +256,7 @@ fun TaskbarBar(
                                                 imageVector = Icons.Outlined.Search,
                                                 contentDescription = strings.searchPlaceholder,
                                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.size(15.dp)
+                                                modifier = Modifier.size(16.dp)
                                             )
                                             Text(
                                                 text = if (strings.startMenu == "Başlat") "Ara" else "Search",
@@ -277,7 +277,7 @@ fun TaskbarBar(
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_taskbar_taskview),
                                         contentDescription = strings.taskSwitcherTitle,
-                                        modifier = Modifier.size(21.dp)
+                                        modifier = Modifier.size(22.dp)
                                     )
                                 }
 
@@ -347,7 +347,7 @@ fun TaskbarBar(
                                                 bitmap = app.icon,
                                                 contentDescription = app.displayLabel,
                                                 modifier = Modifier
-                                                    .size(24.dp)
+                                                    .size(22.dp)
                                                     .clip(RoundedCornerShape(6.dp))
                                             )
                                         } else {

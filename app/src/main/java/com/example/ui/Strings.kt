@@ -136,6 +136,8 @@ data class AppStrings(
     val altTabHint: String,
     val browser: String,
     val browserAddressHint: String,
+    val webViewVersionLabel: String,
+    val webViewProviderUnavailable: String,
     val addSiteToDesktop: String,
     val siteTitleHint: String,
     val siteUrlHint: String,
@@ -261,7 +263,7 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         unlockDesktop = "Masaüstünü Aç",
         recentTrayLabel = "Son Kullanılanlar",
         removeFromRecent = "Son Kullanılanlardan Kaldır",
-        localStorageLabel = "Yerel Depolama",
+        localStorageLabel = "Windroid Uygulama Alanı",
         upFolder = "Üst Klasör",
         refresh = "Yenile",
         searchFilesHint = "Bu klasörde ara...",
@@ -290,6 +292,8 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         altTabHint = "Alt + Tab",
         browser = "Tarayıcı",
         browserAddressHint = "Web adresi yazın veya Google'da arayın...",
+        webViewVersionLabel = "WebView",
+        webViewProviderUnavailable = "WebView sağlayıcısı bulunamadı",
         addSiteToDesktop = "Masaüstüne Uygulama Olarak Ekle",
         siteTitleHint = "Kısayol adı (örn. YouTube)",
         siteUrlHint = "Web adresi (https://...)",
@@ -305,7 +309,7 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         dcimFolder = "Kamera (DCIM)",
         musicFolder = "Müzik",
         moviesFolder = "Videolar",
-        externalAccessHint = "Cihaz klasörlerinizi görmek için yukarıdaki Ana Dizinlerden birine (örn. İndirilenler veya Belgeler) dokunup 'Bu klasörü kullan' izni verin.",
+        externalAccessHint = "Android dosyalarını görmek için üstteki bir klasörü seçin; sistem ekranında 'Bu klasörü kullan' ve 'İzin ver' adımlarını onaylayın.",
         openInExternalBrowser = "Harici Tarayıcıda Aç"
     )
 
@@ -414,7 +418,7 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         unlockDesktop = "Sign in",
         recentTrayLabel = "Recent Apps",
         removeFromRecent = "Remove from Recent",
-        localStorageLabel = "Local Storage",
+        localStorageLabel = "Windroid App Storage",
         upFolder = "Up",
         refresh = "Refresh",
         searchFilesHint = "Search in folder...",
@@ -443,6 +447,8 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         altTabHint = "Alt + Tab",
         browser = "Browser",
         browserAddressHint = "Enter web address or search Google...",
+        webViewVersionLabel = "WebView",
+        webViewProviderUnavailable = "WebView provider unavailable",
         addSiteToDesktop = "Add as Desktop App",
         siteTitleHint = "Shortcut name (e.g. YouTube)",
         siteUrlHint = "Web URL (https://...)",
@@ -458,7 +464,7 @@ fun stringsFor(language: AppLanguage): AppStrings = when (language) {
         dcimFolder = "DCIM / Camera",
         musicFolder = "Music",
         moviesFolder = "Movies",
-        externalAccessHint = "Tap any Main Directory above (Downloads, Documents, Pictures...) and allow access to browse your tablet files.",
+        externalAccessHint = "To see Android files, choose a folder above, then confirm 'Use this folder' and 'Allow' in the system picker.",
         openInExternalBrowser = "Open in External Browser"
     )
 }

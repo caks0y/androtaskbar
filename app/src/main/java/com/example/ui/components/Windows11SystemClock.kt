@@ -138,8 +138,8 @@ fun Windows11SystemClock(
                     text = timeText,
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontFeatureSettings = "tnum",
-                        fontSize = 10.sp,
-                        lineHeight = 12.sp
+                        fontSize = 12.sp,
+                        lineHeight = 14.sp
                     ),
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
@@ -149,8 +149,8 @@ fun Windows11SystemClock(
                         text = dateText,
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontFeatureSettings = "tnum",
-                            fontSize = 9.sp,
-                            lineHeight = 11.sp
+                            fontSize = 11.sp,
+                            lineHeight = 13.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -164,7 +164,7 @@ fun Windows11SystemClock(
                         imageVector = Icons.Outlined.Notifications,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(15.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                     Box(
                         modifier = Modifier
